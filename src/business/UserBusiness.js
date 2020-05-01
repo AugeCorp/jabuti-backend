@@ -17,7 +17,8 @@ class UserBusiness {
 
   async register(){
     try{
-      if(await User.findOne({email: this.email})){
+      const user = await User.findOne({email: this.email})
+      if(user){
         return {error: "Email already exists."}
       }
 
