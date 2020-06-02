@@ -1,7 +1,9 @@
 const mongoose = require('mongoose')
-const dbUrl = require('secure/secrets.json').MongoDb.dbURL
+const { MongoDb } = require('../secure/secrets.json')
 
-mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(MongoDb.dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
 mongoose.Promise = global.Promise
+
+console.log('Mongodb connected...');
 
 module.exports = mongoose

@@ -35,18 +35,19 @@ module.exports = {
     try {
       if (!email) return res.status(404).send({ Error: 'Email not declared!' })
 
-      if (await User.findOne({ email })) {
+      const exists = await User.findOne({ email });
+
+      if (exists) {
         return res.status(400).send({ Error: 'User alredy exists!' })
       }
 
-      const user = new User(req.body)
+      const user = new User(req.body);
 
-      const pwd = await bcrypt.hash(user.password, 10)
+      const pswd = await bcrypt.hash(user.password, 10)
 
-      user.password = pwd
+      user.password = pswd
 
       await user.save()
-
       user.password = undefined
 
       return res
