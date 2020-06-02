@@ -16,6 +16,7 @@
   "rules": {
     "linebreak-style": "off",
     "semi": "off",
-    "no-console": "error"
+    "no-console": "error",
+    "import/no-unresolved": "off"
   }
 }
