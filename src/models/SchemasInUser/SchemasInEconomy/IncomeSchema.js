@@ -5,6 +5,6 @@ const IncomeSchema = new mongoose.Schema({
 
   value: {type: Number, default: 0},
 
-}, {timestamps: true})
+}, {id: false, timestamps: true})
 
 export default IncomeSchema

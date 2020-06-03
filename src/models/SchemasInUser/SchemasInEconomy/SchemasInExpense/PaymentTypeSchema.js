@@ -6,6 +6,6 @@ const PaymentTypeSchema = new mongoose.Schema({
 
   installments: {type: Number, default: 1},
 
-})
+},{id: false, timestamps: true})
 
 export default PaymentTypeSchema

@@ -7,6 +7,6 @@ const GoalsSchema = new mongoose.Schema({
 
   conquestDate: { type: Date },
 
-}, {timestamps: true})
+}, {id: false, timestamps: true})
 
 export default GoalsSchema

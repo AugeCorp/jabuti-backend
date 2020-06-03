@@ -13,6 +13,6 @@ const ExpenseSchema = new mongoose.Schema({
 
   paymentType: PaymentTypeSchema,
 
-}, {timestamps: true})
+}, {id: false, timestamps: true})
 
 export default ExpenseSchema

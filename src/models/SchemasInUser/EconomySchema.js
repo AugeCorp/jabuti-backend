@@ -6,6 +6,6 @@ const EconomySchema = new mongoose.Schema({
   income: [IncomeSchema],
   expenses: [ExpenseSchema],
 
-}, {timestamps: true})
+}, {id: false, timestamps: true})
 
 export default EconomySchema
