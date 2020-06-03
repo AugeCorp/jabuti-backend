@@ -1,41 +1,22 @@
-const mongoose = require('../database/index');
+const mongoose = require('mongoose')
+const AccessesSchema = require('./SchemasInUser/AccessesSchema')
+const GoalsSchema = require('./SchemasInUser/GoalsSchema')
+const EconomySchema = require('./SchemasInUser/EconomySchema')
 
-const UserSchema = new mongoose.Schema(
-  {
-    email: {
-      type: String,
-      required: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    googleAccount: {
-      type: Boolean,
-      default: false,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    income: {
-      type: Number,
-      required: true,
-    },
-    lastAccess: {
-      type: Date,
-      default: Date.now,
-    },
-    activeAccount: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  {
-    timestamps: true,
-    id: true,
-    collection: 'User',
-  },
-)
+const UserSchema = new mongoose.Schema({
 
-module.exports = mongoose.model('User', UserSchema)
+  email:{ type: String, unique: true, required: true },
+  password: { type: String, required: true },
+  token: { type: String, default: '' },
+  name: { type: String, default: '' },
+
+  googleAccount: { type: Boolean, default: false },
+  isActive: { type: Boolean, default: false },
+
+  Accesses: AccessesSchema,
+  Economy: EconomySchema,
+  Goals: [GoalsSchema],
+
+}, {timestamps: true })
+
+mongoose.model('User', UserSchema)
