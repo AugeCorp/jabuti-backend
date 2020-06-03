@@ -83,7 +83,15 @@ module.exports = {
       return res.status(400).send({ error: 'Authenticate Failed!' })
     }
   },
+  
+  async getUsers(req, res){
+    const response = await new UserBusiness({}).getUsers()
+    
+    if(response.failed) return res.status(500).send(response)
 
+    return res.json(response.users)
+
+  },
   // async recuperacao(req, res) {
   //   const { email } = req.body
 
