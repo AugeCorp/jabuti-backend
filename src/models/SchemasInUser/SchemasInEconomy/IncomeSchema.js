@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const IncomeSchema = new mongoose.Schema({
 
   description: {type: String, default: ''},
@@ -7,4 +8,4 @@ const IncomeSchema = new mongoose.Schema({
 
 }, {id: false, timestamps: true})
 
-export default IncomeSchema
+module.exports = IncomeSchema

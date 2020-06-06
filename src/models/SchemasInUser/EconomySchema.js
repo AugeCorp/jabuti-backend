@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const IncomeSchema = require('./SchemasInEconomy/IncomeSchema')
 const ExpenseSchema = require('./SchemasInEconomy/ExpenseSchema')
 
@@ -8,4 +9,4 @@ const EconomySchema = new mongoose.Schema({
 
 }, {id: false, timestamps: true})
 
-export default EconomySchema
+module.exports = EconomySchema

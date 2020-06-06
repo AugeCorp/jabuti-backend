@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const GoalsSchema = new mongoose.Schema({
 
   description: { type: String, default: ''},
@@ -9,4 +10,4 @@ const GoalsSchema = new mongoose.Schema({
 
 }, {id: false, timestamps: true})
 
-export default GoalsSchema
+module.exports = GoalsSchema

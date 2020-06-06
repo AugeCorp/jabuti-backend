@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const AccessesSchema = new mongoose.Schema({
 
   lastAccess: { type: Date, default: Date.now() },
@@ -5,4 +6,4 @@ const AccessesSchema = new mongoose.Schema({
 
 },{id: false })
 
-export default AccessesSchema
+module.exports = AccessesSchema

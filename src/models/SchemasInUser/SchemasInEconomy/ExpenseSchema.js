@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const PaymentTypeSchema = require('./SchemasInExpense/PaymentTypeSchema')
 
 const ExpenseSchema = new mongoose.Schema({
@@ -15,4 +16,4 @@ const ExpenseSchema = new mongoose.Schema({
 
 }, {id: false, timestamps: true})
 
-export default ExpenseSchema
+module.exports = ExpenseSchema

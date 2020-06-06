@@ -1,3 +1,5 @@
+const mongoose = require('mongoose')
+
 const PaymentTypeSchema = new mongoose.Schema({
 
   cash: { type: Boolean, default: false},
@@ -8,4 +10,4 @@ const PaymentTypeSchema = new mongoose.Schema({
 
 },{id: false, timestamps: true})
 
-export default PaymentTypeSchema
+module.exports = PaymentTypeSchema
