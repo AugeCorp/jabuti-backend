@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-const GoalsSchema = new mongoose.Schema({
+const mongoose = require('../../database/index')
+const GoalsSchema = mongoose.Schema({
 
   description: { type: String, default: ''},
   category: { type: String, default: ''},

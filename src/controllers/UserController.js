@@ -3,61 +3,110 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const mailer = require('nodemailer')
 const User = require('../models/User')
+const mongoose = require('../database/index')
 const authConfig = require('../secure/secrets.json')
 // const { hostMail, sendEmail } = require('../secure/node-mailer/mailer.json')
 
-function generateToken(params = {}) {
-  return jwt.sign(params, authConfig.secret, {
-    expiresIn: 86400,
-  })
-}
-
 module.exports = 
   class UserController{
-
     async index(req, res) {
       try {
+        const response = await User.find()
+        return res.status(200).send(response)
+      } catch (err) {
+        err.message = 'Error in database'
+        console.log(err)
+        return res.status(400).json(err)
+      }
+    }
+
+    async show(req, res){
+      try {
+        let err
         const { email } = req.body
-  
-        if (!email) return res.status(400).send({ error: 'email not passed' })
+
+        if (!email) {
+          err = { message: 'Email not passed'}
+          throw err
+        }
   
         const response = await User.findOne({ email })
   
-        if (!response) return res.status(404).send({ error: 'email not exists' })
+        if (!response){
+          err = { message: 'email not exists'}
+          throw err
+        }
   
         return res.status(200).send(response)
       } catch (err) {
-        return res.status(400).json({ error: 'User not Found' })
+        console.log(err)
+        return res.status(400).json(err)
       }
     }
   
-    async register(req, res) {
-      
-      const { email } = req.body
-  
+    async create(req, res) {
+      const session = await mongoose.startSession()
+      session.startTransaction()
       try {
-        if (!email) return res.status(404).send({ Error: 'Email not declared!' })
-  
-        const exists = await User.findOne({ email });
-  
-        if (exists) {
-          return res.status(400).send({ Error: 'User alredy exists!' })
+        const { email, password } = req.body
+        let err
+        if (!email) {
+          err = { message: 'Email not declared!'}
+          throw err
         }
-  
-        const user = new User(req.body);
-  
-        const pswd = await bcrypt.hash(user.password, 10)
-  
-        user.password = pswd
-  
-        await user.save()
-        user.password = undefined
-  
-        return res
-          .status(200)
-          .send({ user, token: generateToken({ user: user._id }) })
+
+        if (!password) {
+          err = { message: 'Password not declared!'}
+          throw err
+        }
+       
+        const exists = await User.findOne({ email });
+
+        if (exists) {
+          err = { message: 'User alredy exists!'}
+          throw err
+        }
+    
+        const cryptPassword = await bcrypt.hash(password, 10)
+        const newUser = await User.create({email, password: cryptPassword})
+          
+        const token = jwt.sign({id: newUser._id}, authConfig.secret, {
+          expiresIn: 86400,
+        })
+
+         newUser.Economy.income.push({
+          description: 'teste',
+          type: 'teste',
+          value: 0,
+        })
+
+        newUser.Economy.expenses.push({
+          priority: 'teste',
+          description:  'teste',
+          category: 'teste',
+          type:  'teste',
+        
+          price:  0,  
+          paymentType: {
+            cash:  false,
+            credit: false,
+            parceledOut: false,
+        
+            installments:  1
+          }
+        })
+
+        await newUser.updateOne({token})
+        await newUser.save()
+        await session.commitTransaction()
+        return res.status(200).send({success: 'Registration was successful!'})
+
       } catch (err) {
-        return res.status(400).send({ error: 'Registration Failed!' })
+        console.log(err)
+        await session.abortTransaction();
+        return res.status(400).send({ error: err.message || 'Error creation user' })
+      }finally {
+        session.endSession();
       }
     }
   
@@ -87,13 +136,8 @@ module.exports =
       }
     }
     
-    async getUsers(req, res){
-      const response = await new UserBusiness({}).getUsers()
-      
-      if(response.failed) return res.status(500).send(response)
-  
-      return res.json(response.users)
-  
+    async update(req, res){
+
     }
     // async recuperacao(req, res) {
     //   const { email } = req.body

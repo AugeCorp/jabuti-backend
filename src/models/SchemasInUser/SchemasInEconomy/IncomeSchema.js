@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-const IncomeSchema = new mongoose.Schema({
+const mongoose = require('../../../database/index')
+const IncomeSchema = mongoose.Schema({
 
   description: {type: String, default: ''},
   type: {type: String, default: ''},

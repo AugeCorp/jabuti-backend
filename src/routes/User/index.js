@@ -3,11 +3,13 @@ const UserController = require('../../controllers/UserController')
 
 const userController = new UserController()
 
-routes.get('/', userController.index)
+routes.post('/user', userController.create)
 
-routes.get('/users', userController.getUsers)
+routes.get('/users', userController.index)
 
-routes.post('/register', userController.register)
+routes.get('/user', userController.show)
+
+routes.put('/user', userController.update)
 
 require('./auth.routes');
 
