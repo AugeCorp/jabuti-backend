@@ -60,7 +60,7 @@ module.exports =
           throw err
         }
        
-        const exists = await User.findOne({ email });
+        const exists = await User.findOne({ email })
 
         if (exists) {
           err = { message: 'User alredy exists!'}
@@ -103,10 +103,10 @@ module.exports =
 
       } catch (err) {
         console.log(err)
-        await session.abortTransaction();
+        await session.abortTransaction()
         return res.status(400).send({ error: err.message || 'Error creation user' })
       }finally {
-        session.endSession();
+        session.endSession()
       }
     }
   
