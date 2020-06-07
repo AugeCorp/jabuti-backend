@@ -74,28 +74,6 @@ module.exports =
           expiresIn: 86400,
         })
 
-         newUser.Economy.income.push({
-          description: 'teste',
-          type: 'teste',
-          value: 0,
-        })
-
-        newUser.Economy.expenses.push({
-          priority: 'teste',
-          description:  'teste',
-          category: 'teste',
-          type:  'teste',
-        
-          price:  0,  
-          paymentType: {
-            cash:  false,
-            credit: false,
-            parceledOut: false,
-        
-            installments:  1
-          }
-        })
-
         await newUser.updateOne({token})
         await newUser.save()
         await session.commitTransaction()
