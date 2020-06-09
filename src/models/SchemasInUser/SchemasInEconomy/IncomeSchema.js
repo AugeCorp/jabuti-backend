@@ -1,4 +1,5 @@
-const IncomeSchema = new mongoose.Schema({
+const mongoose = require('../../../database/index')
+const IncomeSchema = mongoose.Schema({
 
   description: {type: String, default: ''},
   type: {type: String, default: ''},
@@ -7,4 +8,4 @@ const IncomeSchema = new mongoose.Schema({
 
 }, {id: false, timestamps: true})
 
-export default IncomeSchema
+module.exports = IncomeSchema

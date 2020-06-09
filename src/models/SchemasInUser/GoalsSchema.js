@@ -1,4 +1,5 @@
-const GoalsSchema = new mongoose.Schema({
+const mongoose = require('../../database/index')
+const GoalsSchema = mongoose.Schema({
 
   description: { type: String, default: ''},
   category: { type: String, default: ''},
@@ -9,4 +10,4 @@ const GoalsSchema = new mongoose.Schema({
 
 }, {id: false, timestamps: true})
 
-export default GoalsSchema
+module.exports = GoalsSchema
