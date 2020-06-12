@@ -1,41 +1,80 @@
 const bcrypt = require('bcryptjs')
-const mongoose = require('mongoose')
+const jwt = require('jsonwebtoken')
+const User = require('../models/User')
+const mongoose = require('../database/index')
+const authConfig = require('../secure/secrets.json')
 
-const User = mongoose.model('User')
 
 class UserBusiness {
-  constructor(params) {
-    this.email = params.email
-    this.password = params.password
-    this.name = params.name
-  }
-
-  async execute() {}
-
-  async register() {
+  async getUsers() {
     try {
-      const user = await User.findOne({ email: this.email })
-      if (user) {
-        return { error: 'Email already exists.' }
-      }
-
-      const hash = bcrypt.hashSync(this.password, 16)
-      await User.create({ name: this.name, email: this.email, password: hash })
-
-      return { created: true }
+      const response = await User.find()
+      return response
     } catch (err) {
-      console.log(err.message)
-      return { failed: err.message }
+      err.message = 'Error in database'
+      console.log(err)
+      throw err
     }
   }
 
-  async getUsers() {
+  async getUser(params = {}) {
+    let err
+    const { email } = params
+    if (!email) {
+      err = { message: 'Email not passed' }
+      throw err
+    }
+
+    const response = await User.findOne({ email })
+
+    if (!response) {
+      err = { message: 'email not exists' }
+      throw err
+    }
+
+    return response
+  }
+
+  async createUser(params = {}) {
+    const session = await mongoose.startSession()
+    session.startTransaction()
     try {
-      const users = await User.find()
-      return { users, success: true }
+      const { email, password } = params
+      let err
+      if (!email) {
+        err = { message: 'Email not declared!' }
+        throw err
+      }
+
+      if (!password) {
+        err = { message: 'Password not declared!' }
+        throw err
+      }
+
+      const exists = await User.findOne({ email })
+
+      if (exists) {
+        err = { message: 'User alredy exists!' }
+        throw err
+      }
+
+      const cryptPassword = await bcrypt.hash(password, 10)
+      const newUser = await User.create({ email, password: cryptPassword })
+
+      const token = jwt.sign({ id: newUser._id }, authConfig.secret, {
+        expiresIn: 86400,
+      })
+
+      await newUser.updateOne({ token })
+      await newUser.save()
+      await session.commitTransaction()
+      return { success: 'Registration was successful!' }
     } catch (err) {
-      console.log(err.message)
-      return { failed: err.message }
+      console.log(err)
+      await session.abortTransaction()
+      return err
+    } finally {
+      session.endSession()
     }
   }
 }

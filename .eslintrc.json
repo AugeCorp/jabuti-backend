@@ -19,6 +19,7 @@
     "no-console": "off",
     "import/no-unresolved": "off",
     "class-methods-use-this": "off",
-    "no-underscore-dangle":"off"
+    "no-underscore-dangle":"off",
+    "no-restricted-syntax":"off"
   }
 }
