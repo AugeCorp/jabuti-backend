@@ -1,15 +1,13 @@
 const User = require('../models/User')
 const mongoose = require('../database/index')
 
-module.exports = class ExpenseBusiness {
+
+class IncomeBusiness {
   async create(params = {}) {
     const session = await mongoose.startSession()
     session.startTransaction()
     try {
       let err
-      const {
-        _id, paymentType, priority, description, price, category, validity, type,
-      } = params
 
       for (const [key, value] of Object.entries(params)) {
         if (value == null || value === undefined) {
@@ -17,21 +15,24 @@ module.exports = class ExpenseBusiness {
           throw err
         }
       }
+      const {
+        _id, value, description, type,
+      } = params
 
       if (!mongoose.mongo.ObjectId.isValid(_id)) {
         err = { message: 'It is not a valid Id!' }
         throw err
       }
 
-      if (!Number.isInteger(price)) {
+      if (!Number.isInteger(value)) {
         err = { message: '"Price" is not a Integer!' }
         throw err
       }
 
       const user = await User.findById({ _id: mongoose.Types.ObjectId(_id) })
 
-      user.Economy.expenses.push({
-        paymentType, priority, price, description, category, validity, type,
+      user.Economy.income.push({
+        value, description, type,
       })
 
       await user.save()
@@ -46,7 +47,7 @@ module.exports = class ExpenseBusiness {
     }
   }
 
-  async getExpenses(params = {}) {
+  async getIncomes(params = {}) {
     try {
       const { _id } = params
       let err;
@@ -58,7 +59,7 @@ module.exports = class ExpenseBusiness {
 
       const response = await User
         .aggregate([{ $match: { _id: mongoose.Types.ObjectId(_id) } }])
-        .project({ expenses: '$Economy.expenses', _id: false })
+        .project({ expenses: '$Economy.income', _id: false })
 
       if (response.length === 0) {
         err = { message: 'User not exists!' }
@@ -72,26 +73,26 @@ module.exports = class ExpenseBusiness {
     }
   }
 
-  async getExpense(params = {}) {
+  async getIncome(params = {}) {
     try {
-      const { expenseId } = params
+      const { incomeId } = params
       let err;
 
-      if (!mongoose.mongo.ObjectId.isValid(expenseId)) {
-        err = { message: '"expenseId" is not a valid Id!' }
+      if (!mongoose.mongo.ObjectId.isValid(incomeId)) {
+        err = { message: '"incomeId" is not a valid Id!' }
         throw err
       }
 
       const response = await User
-        .findOne({ 'Economy.expenses': { $elemMatch: { _id: mongoose.Types.ObjectId(expenseId) } } }, { 'Economy.expenses.$': true })
+        .findOne({ 'Economy.income': { $elemMatch: { _id: mongoose.Types.ObjectId(incomeId) } } }, { 'Economy.income.$': true })
 
       if (!response) {
-        err = { message: 'Expense not exists!' }
+        err = { message: 'Income not exists!' }
         throw err
       }
-      const expense = response.Economy.expenses[0]
+      const income = response.Economy.income[0]
 
-      return expense
+      return income
     } catch (err) {
       console.log(err)
       throw err
@@ -102,35 +103,35 @@ module.exports = class ExpenseBusiness {
     const session = await mongoose.startSession()
     session.startTransaction()
     try {
-      const { expenseId } = params
+      const { incomeId } = params
       let err;
 
-      if (!mongoose.mongo.ObjectId.isValid(expenseId)) {
-        err = { message: '"expenseId" is not a valid Id!' }
+      if (!mongoose.mongo.ObjectId.isValid(incomeId)) {
+        err = { message: '"incomeId" is not a valid Id!' }
         throw err
       }
 
       const response = await User
-        .findOne({ 'Economy.expenses': { $elemMatch: { _id: mongoose.Types.ObjectId(expenseId) } } })
+        .findOne({ 'Economy.income': { $elemMatch: { _id: mongoose.Types.ObjectId(incomeId) } } })
 
       if (!response) {
-        err = { message: 'Expense not exists!' }
+        err = { message: 'Income not exists!' }
         throw err
       }
 
-      const found = response.Economy.expenses
-        .findIndex((expense) => String(expense._id) === String(expenseId));
+      const found = response.Economy.income
+        .findIndex((income) => String(income._id) === String(incomeId));
 
-      if (found === 0) await response.Economy.expenses.shift()
+      if (found === 0) await response.Economy.income.shift()
 
-      else if (response.Economy.expenses.length - 1 === found) await response.Economy.expenses.pop()
+      else if (response.Economy.income.length - 1 === found) await response.Economy.income.pop()
 
-      else await response.Economy.expenses.splice(found, 1)
+      else await response.Economy.income.splice(found, 1)
 
       await response.save()
       await session.commitTransaction()
 
-      return { success: 'expense is deleted!' }
+      return { success: 'income is deleted!' }
     } catch (err) {
       console.log(err)
       await session.abortTransaction()
@@ -144,8 +145,8 @@ module.exports = class ExpenseBusiness {
     const session = await mongoose.startSession()
     session.startTransaction()
     try {
-      const { expenseObject } = params
-      const { _id } = expenseObject
+      const { incomeObject } = params
+      const { _id } = incomeObject
       let err;
 
       if (!mongoose.mongo.ObjectId.isValid(_id)) {
@@ -154,22 +155,22 @@ module.exports = class ExpenseBusiness {
       }
 
       const response = await User
-        .findOne({ 'Economy.expenses': { $elemMatch: { _id: mongoose.Types.ObjectId(_id) } } })
+        .findOne({ 'Economy.income': { $elemMatch: { _id: mongoose.Types.ObjectId(_id) } } })
 
       if (!response) {
-        err = { message: 'Expense not exists!' }
+        err = { message: 'Income not exists!' }
         throw err
       }
 
-      const found = response.Economy.expenses
-        .findIndex((expense) => String(expense._id) === String(_id));
-      console.log(found)
+      const found = response.Economy.income
+        .findIndex((income) => String(income._id) === String(_id));
 
-      response.Economy.expenses[found] = expenseObject
+      response.Economy.income[found] = incomeObject
+
       await response.save()
       await session.commitTransaction()
 
-      return { expense: response.Economy.expenses[found] }
+      return { Income: response.Economy.income[found] }
     } catch (err) {
       console.log(err)
       await session.abortTransaction()
@@ -179,3 +180,5 @@ module.exports = class ExpenseBusiness {
     }
   }
 }
+
+module.exports = IncomeBusiness
