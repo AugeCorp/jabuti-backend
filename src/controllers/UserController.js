@@ -43,4 +43,16 @@ module.exports = class UserController extends UserBusiness {
       return res.status(400).send(err)
     }
   }
+
+
+  async update(req, res) {
+    try {
+      const { user } = req.body
+      const response = await super.update({ user })
+      return res.status(200).send(response)
+    } catch (err) {
+      console.log(err)
+      return res.status(400).send(err)
+    }
+  }
 }

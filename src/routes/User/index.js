@@ -13,6 +13,8 @@ routes.get('/user', userController.show)
 
 routes.delete('/user/:_id', userController.delete)
 
+routes.put('/user', userController.update)
+
 // expense
 routes.get('/expenses/:_id', expenseController.show)
 

@@ -106,6 +106,40 @@ class UserBusiness {
       session.endSession()
     }
   }
+
+  async update(params = {}) {
+    const session = await mongoose.startSession()
+    session.startTransaction()
+    try {
+      const { user } = params
+      const { _id } = user
+      let err;
+
+      if (!mongoose.mongo.ObjectId.isValid(_id)) {
+        err = { message: '"_id" is not a valid Id!' }
+        throw err
+      }
+
+      const response = await User.findOneAndUpdate({ _id }, user)
+
+
+      if (!response) {
+        err = { message: 'User not exists!' }
+        throw err
+      }
+      await response.save()
+
+      await session.commitTransaction()
+
+      return { user: response }
+    } catch (err) {
+      console.log(err)
+      await session.abortTransaction()
+      throw err
+    } finally {
+      session.endSession()
+    }
+  }
 }
 
 module.exports = UserBusiness
