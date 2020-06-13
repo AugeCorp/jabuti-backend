@@ -130,7 +130,7 @@ module.exports = class ExpenseBusiness {
       await response.save()
       await session.commitTransaction()
 
-      return { success: 'expense is deleted!' }
+      return { deleted: true }
     } catch (err) {
       console.log(err)
       await session.abortTransaction()
@@ -168,7 +168,7 @@ module.exports = class ExpenseBusiness {
       await response.save()
       await session.commitTransaction()
 
-      return { expense: response.Economy.expenses[found] }
+      return { updatedExpense: response.Economy.expenses[found] }
     } catch (err) {
       console.log(err)
       await session.abortTransaction()

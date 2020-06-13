@@ -97,7 +97,7 @@ class UserBusiness {
       }
 
       await session.commitTransaction()
-      return { success: 'User deleted was successful!' }
+      return { deleted: true }
     } catch (err) {
       console.log(err)
       await session.abortTransaction()
@@ -131,7 +131,7 @@ class UserBusiness {
 
       await session.commitTransaction()
 
-      return { user: response }
+      return { updatedUser: response }
     } catch (err) {
       console.log(err)
       await session.abortTransaction()

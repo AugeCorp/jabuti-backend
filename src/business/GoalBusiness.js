@@ -37,7 +37,7 @@ class GoalBusiness {
 
       await user.save()
       await session.commitTransaction()
-      return params
+      return { newGoal: params }
     } catch (err) {
       console.log(err)
       await session.abortTransaction()
@@ -131,7 +131,7 @@ class GoalBusiness {
       await response.save()
       await session.commitTransaction()
 
-      return { success: 'Goal is deleted!' }
+      return { deleted: true }
     } catch (err) {
       console.log(err)
       await session.abortTransaction()
@@ -169,7 +169,7 @@ class GoalBusiness {
       await response.save()
       await session.commitTransaction()
 
-      return { goal: response.Goals[found] }
+      return { updatedGoal: response.Goals[found] }
     } catch (err) {
       console.log(err)
       await session.abortTransaction()
