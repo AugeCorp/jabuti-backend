@@ -32,4 +32,15 @@ module.exports = class UserController extends UserBusiness {
       return res.status(400).send(err)
     }
   }
+
+  async delete(req, res) {
+    try {
+      const { _id } = req.params
+      const response = await super.delete({ _id })
+      return res.status(200).send(response)
+    } catch (err) {
+      console.log(err)
+      return res.status(400).send(err)
+    }
+  }
 }

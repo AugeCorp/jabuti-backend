@@ -11,6 +11,7 @@ routes.get('/users', userController.index)
 
 routes.get('/user', userController.show)
 
+routes.delete('/user/:_id', userController.delete)
 
 routes.get('/expenses/:_id', expenseController.show)
 

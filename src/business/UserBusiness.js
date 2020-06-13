@@ -77,6 +77,35 @@ class UserBusiness {
       session.endSession()
     }
   }
+
+  async delete(params = {}) {
+    const session = await mongoose.startSession()
+    session.startTransaction()
+    try {
+      const { _id } = params
+      let err
+      if (!_id) {
+        err = { message: '_id not declared!' }
+        throw err
+      }
+
+      const exists = await User.findByIdAndDelete({ _id })
+
+      if (!exists) {
+        err = { message: 'User does not exist!' }
+        throw err
+      }
+
+      await session.commitTransaction()
+      return { success: 'User deleted was successful!' }
+    } catch (err) {
+      console.log(err)
+      await session.abortTransaction()
+      return err
+    } finally {
+      session.endSession()
+    }
+  }
 }
 
 module.exports = UserBusiness
