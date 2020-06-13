@@ -163,7 +163,6 @@ module.exports = class ExpenseBusiness {
 
       const found = response.Economy.expenses
         .findIndex((expense) => String(expense._id) === String(_id));
-      console.log(found)
 
       response.Economy.expenses[found] = expenseObject
       await response.save()
