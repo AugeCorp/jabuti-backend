@@ -48,4 +48,15 @@ module.exports = class ExpenseController extends ExpenseBusiness {
       return res.status(400).json(err)
     }
   }
+
+  async update(req, res) {
+    try {
+      const { expenseObject } = req.body
+      const response = await super.update({ expenseObject })
+      return res.status(200).json(response)
+    } catch (err) {
+      console.log(err)
+      return res.status(400).json(err)
+    }
+  }
 }
