@@ -1,8 +1,7 @@
 const User = require('../models/User')
 const mongoose = require('../database/index')
 
-
-class IncomeBusiness {
+class GoalBusiness {
   async create(params = {}) {
     const session = await mongoose.startSession()
     session.startTransaction()
@@ -15,8 +14,9 @@ class IncomeBusiness {
           throw err
         }
       }
+
       const {
-        _id, value, description, type,
+        _id, price, description, category, conquestDate,
       } = params
 
       if (!mongoose.mongo.ObjectId.isValid(_id)) {
@@ -24,15 +24,15 @@ class IncomeBusiness {
         throw err
       }
 
-      if (!Number.isInteger(value)) {
+      if (!Number.isInteger(price)) {
         err = { message: '"Price" is not a Integer!' }
         throw err
       }
 
       const user = await User.findById({ _id: mongoose.Types.ObjectId(_id) })
 
-      user.Economy.income.push({
-        value, description, type,
+      user.Goals.push({
+        price, description, category, conquestDate,
       })
 
       await user.save()
@@ -47,7 +47,7 @@ class IncomeBusiness {
     }
   }
 
-  async getIncomes(params = {}) {
+  async getGoals(params = {}) {
     try {
       const { _id } = params
       let err;
@@ -59,7 +59,7 @@ class IncomeBusiness {
 
       const response = await User
         .aggregate([{ $match: { _id: mongoose.Types.ObjectId(_id) } }])
-        .project({ incomes: '$Economy.income', _id: false })
+        .project({ goals: '$Goals', _id: false })
 
       if (response.length === 0) {
         err = { message: 'User not exists!' }
@@ -73,26 +73,26 @@ class IncomeBusiness {
     }
   }
 
-  async getIncome(params = {}) {
+  async getGoal(params = {}) {
     try {
-      const { incomeId } = params
+      const { goalId } = params
       let err;
 
-      if (!mongoose.mongo.ObjectId.isValid(incomeId)) {
-        err = { message: '"incomeId" is not a valid Id!' }
+      if (!mongoose.mongo.ObjectId.isValid(goalId)) {
+        err = { message: '"goalId" is not a valid Id!' }
         throw err
       }
 
       const response = await User
-        .findOne({ 'Economy.income': { $elemMatch: { _id: mongoose.Types.ObjectId(incomeId) } } }, { 'Economy.income.$': true })
+        .findOne({ Goals: { $elemMatch: { _id: mongoose.Types.ObjectId(goalId) } } }, { 'Goals.$': true })
 
       if (!response) {
-        err = { message: 'Income not exists!' }
+        err = { message: 'Goals not exists!' }
         throw err
       }
-      const income = response.Economy.income[0]
+      const goal = response.Goals[0]
 
-      return income
+      return goal
     } catch (err) {
       console.log(err)
       throw err
@@ -103,35 +103,35 @@ class IncomeBusiness {
     const session = await mongoose.startSession()
     session.startTransaction()
     try {
-      const { incomeId } = params
+      const { goalId } = params
       let err;
 
-      if (!mongoose.mongo.ObjectId.isValid(incomeId)) {
-        err = { message: '"incomeId" is not a valid Id!' }
+      if (!mongoose.mongo.ObjectId.isValid(goalId)) {
+        err = { message: '"goalId" is not a valid Id!' }
         throw err
       }
 
       const response = await User
-        .findOne({ 'Economy.income': { $elemMatch: { _id: mongoose.Types.ObjectId(incomeId) } } })
+        .findOne({ Goals: { $elemMatch: { _id: mongoose.Types.ObjectId(goalId) } } })
 
       if (!response) {
-        err = { message: 'Income not exists!' }
+        err = { message: 'Goal not exists!' }
         throw err
       }
 
-      const found = response.Economy.income
-        .findIndex((income) => String(income._id) === String(incomeId));
+      const found = response.Goals
+        .findIndex((goal) => String(goal._id) === String(goalId));
 
-      if (found === 0) await response.Economy.income.shift()
+      if (found === 0) await response.Goals.shift()
 
-      else if (response.Economy.income.length - 1 === found) await response.Economy.income.pop()
+      else if (response.Goals.length - 1 === found) await response.Goals.pop()
 
-      else await response.Economy.income.splice(found, 1)
+      else await response.Goals.splice(found, 1)
 
       await response.save()
       await session.commitTransaction()
 
-      return { success: 'income is deleted!' }
+      return { success: 'Goal is deleted!' }
     } catch (err) {
       console.log(err)
       await session.abortTransaction()
@@ -145,32 +145,31 @@ class IncomeBusiness {
     const session = await mongoose.startSession()
     session.startTransaction()
     try {
-      const { incomeObject } = params
-      const { _id } = incomeObject
+      const { goalObject } = params
+      const { _id } = goalObject
       let err;
 
       if (!mongoose.mongo.ObjectId.isValid(_id)) {
-        err = { message: '"expenseId" is not a valid Id!' }
+        err = { message: '"goalId" is not a valid Id!' }
         throw err
       }
 
       const response = await User
-        .findOne({ 'Economy.income': { $elemMatch: { _id: mongoose.Types.ObjectId(_id) } } })
+        .findOne({ Goals: { $elemMatch: { _id: mongoose.Types.ObjectId(_id) } } })
 
       if (!response) {
-        err = { message: 'Income not exists!' }
+        err = { message: 'Goal not exists!' }
         throw err
       }
 
-      const found = response.Economy.income
-        .findIndex((income) => String(income._id) === String(_id));
+      const found = response.Goals
+        .findIndex((goal) => String(goal._id) === String(_id));
 
-      response.Economy.income[found] = incomeObject
-
+      response.Goals[found] = goalObject
       await response.save()
       await session.commitTransaction()
 
-      return { Income: response.Economy.income[found] }
+      return { goal: response.Goals[found] }
     } catch (err) {
       console.log(err)
       await session.abortTransaction()
@@ -181,4 +180,4 @@ class IncomeBusiness {
   }
 }
 
-module.exports = IncomeBusiness
+module.exports = GoalBusiness
