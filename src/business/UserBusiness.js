@@ -6,6 +6,48 @@ const authConfig = require('../secure/secrets.json')
 
 
 class UserBusiness {
+  async login(params = {}) {
+    try {
+      let err
+
+      const { email, password } = params
+
+      if (!email) {
+        err = { message: 'Email not passed' }
+        throw err
+      }
+
+      if (!password) {
+        err = { message: 'Password not passed' }
+        throw err
+      }
+      const user = await User.findOne({ email })
+
+      if (!user) {
+        err = { message: 'User not found' }
+        throw err
+      }
+
+      if (!await bcrypt.compare(password, user.password)) {
+        err = { message: ' Login was not successfull' }
+        throw err
+      }
+
+
+      const token = jwt.sign({ id: user._id }, authConfig.secret, {
+        expiresIn: 86400,
+      })
+      user.token = token
+
+      await user.save()
+      user.password = undefined
+      return user
+    } catch (err) {
+      console.log(err)
+      throw err
+    }
+  }
+
   async getUsers() {
     try {
       const response = await User.find()
@@ -59,16 +101,17 @@ class UserBusiness {
       }
 
       const cryptPassword = await bcrypt.hash(password, 10)
+
       const newUser = await User.create({ email, password: cryptPassword })
 
       const token = jwt.sign({ id: newUser._id }, authConfig.secret, {
         expiresIn: 86400,
       })
 
-      await newUser.updateOne({ token })
+      newUser.token = token
       await newUser.save()
       await session.commitTransaction()
-      return { success: 'Registration was successful!' }
+      return newUser
     } catch (err) {
       console.log(err)
       await session.abortTransaction()
