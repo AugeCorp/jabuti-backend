@@ -40,7 +40,7 @@ module.exports = class ExpenseBusiness {
     } catch (err) {
       console.log(err)
       await session.abortTransaction()
-      return err
+      throw { error: err }
     } finally {
       session.endSession()
     }
@@ -67,8 +67,7 @@ module.exports = class ExpenseBusiness {
 
       return { expenses: response[0] }
     } catch (err) {
-      console.log(err)
-      throw err
+      throw { error: err }
     }
   }
 
@@ -93,8 +92,7 @@ module.exports = class ExpenseBusiness {
 
       return { expense }
     } catch (err) {
-      console.log(err)
-      throw err
+      throw { error: err }
     }
   }
 
@@ -128,9 +126,8 @@ module.exports = class ExpenseBusiness {
 
       return { updatedExpense: response.Economy.expenses[found] }
     } catch (err) {
-      console.log(err)
       await session.abortTransaction()
-      throw err
+      throw { error: err }
     } finally {
       session.endSession()
     }
@@ -170,9 +167,8 @@ module.exports = class ExpenseBusiness {
 
       return { deleted: true }
     } catch (err) {
-      console.log(err)
       await session.abortTransaction()
-      throw err
+      throw { error: err }
     } finally {
       session.endSession()
     }

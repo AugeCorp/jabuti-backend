@@ -5,10 +5,10 @@ module.exports = class UserController extends UserBusiness {
     try {
       const { email, password } = req.body
       const response = await super.create({ email, password })
-      return res.status(200).send(response)
+      return res.status(201).json(response)
     } catch (err) {
       console.log(err)
-      return res.status(400).send(err)
+      return res.status(400).json(err)
     }
   }
 

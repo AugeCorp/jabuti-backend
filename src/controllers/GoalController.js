@@ -10,7 +10,7 @@ module.exports = class GoalController extends GoalBusiness {
       const response = await super.create({
         _id, price, description, category, conquestDate,
       })
-      return res.status(200).json(response)
+      return res.status(201).json(response)
     } catch (err) {
       return res.status(400).json(err)
     }

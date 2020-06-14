@@ -20,6 +20,7 @@
     "import/no-unresolved": "off",
     "class-methods-use-this": "off",
     "no-underscore-dangle":"off",
-    "no-restricted-syntax":"off"
+    "no-restricted-syntax":"off",
+    "no-throw-literal":"off"
   }
 }

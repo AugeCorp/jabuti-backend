@@ -39,9 +39,8 @@ class IncomeBusiness {
       await session.commitTransaction()
       return { newIncome: params }
     } catch (err) {
-      console.log(err)
       await session.abortTransaction()
-      return err
+      throw { error: err }
     } finally {
       session.endSession()
     }
@@ -68,8 +67,7 @@ class IncomeBusiness {
 
       return { incomes: response[0] }
     } catch (err) {
-      console.log(err)
-      throw err
+      throw { error: err }
     }
   }
 
@@ -94,8 +92,7 @@ class IncomeBusiness {
 
       return { income }
     } catch (err) {
-      console.log(err)
-      throw err
+      throw { error: err }
     }
   }
 
@@ -130,9 +127,8 @@ class IncomeBusiness {
 
       return { updatedIncome: response.Economy.income[found] }
     } catch (err) {
-      console.log(err)
       await session.abortTransaction()
-      throw err
+      throw { error: err }
     } finally {
       session.endSession()
     }
@@ -172,9 +168,8 @@ class IncomeBusiness {
 
       return { deleted: true }
     } catch (err) {
-      console.log(err)
       await session.abortTransaction()
-      throw err
+      throw { error: err }
     } finally {
       session.endSession()
     }
