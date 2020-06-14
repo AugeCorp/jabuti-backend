@@ -66,7 +66,7 @@ class GoalBusiness {
         throw err
       }
 
-      return response[0]
+      return { goals: response[0] }
     } catch (err) {
       console.log(err)
       throw err
@@ -92,7 +92,7 @@ class GoalBusiness {
       }
       const goal = response.Goals[0]
 
-      return goal
+      return { goal }
     } catch (err) {
       console.log(err)
       throw err

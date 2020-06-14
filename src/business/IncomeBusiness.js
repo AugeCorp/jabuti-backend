@@ -66,7 +66,7 @@ class IncomeBusiness {
         throw err
       }
 
-      return response[0]
+      return { incomes: response[0] }
     } catch (err) {
       console.log(err)
       throw err
@@ -92,7 +92,7 @@ class IncomeBusiness {
       }
       const income = response.Economy.income[0]
 
-      return income
+      return { income }
     } catch (err) {
       console.log(err)
       throw err

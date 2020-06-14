@@ -40,7 +40,7 @@ class UserBusiness {
       newUser.token = token
       await newUser.save()
       await session.commitTransaction()
-      return newUser
+      return { newUser }
     } catch (err) {
       console.log(err)
       await session.abortTransaction()
@@ -65,13 +65,13 @@ class UserBusiness {
       throw err
     }
 
-    return response
+    return { user: response }
   }
 
   async index() {
     try {
       const response = await User.find()
-      return response
+      return { users: response }
     } catch (err) {
       err.message = 'Error in database'
       console.log(err)
