@@ -16,7 +16,10 @@
   "rules": {
     "linebreak-style": "off",
     "semi": "off",
-    "no-console": "error",
-    "import/no-unresolved": "off"
+    "no-console": "off",
+    "import/no-unresolved": "off",
+    "class-methods-use-this": "off",
+    "no-underscore-dangle":"off",
+    "no-restricted-syntax":"off"
   }
 }

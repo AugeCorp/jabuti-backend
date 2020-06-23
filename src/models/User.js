@@ -3,11 +3,11 @@ const GoalsSchema = require('./SchemasInUser/GoalsSchema')
 const IncomeSchema = require('./SchemasInUser/SchemasInEconomy/IncomeSchema')
 const ExpenseSchema = require('./SchemasInUser/SchemasInEconomy/ExpenseSchema')
 
-let Schema = mongoose.Schema
+const { Schema } = mongoose
 
 const UserSchema = new Schema({
 
-  email:{ type: String, unique: true, required: true },
+  email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   token: { type: String, default: '' },
   name: { type: String, default: '' },
@@ -16,14 +16,14 @@ const UserSchema = new Schema({
   isActive: { type: Boolean, default: false },
   Accesses: {
     lastAccess: { type: Date, default: Date.now() },
-    allAccesses: { type: Array, default: []},
+    allAccesses: { type: Array, default: [] },
   },
   Goals: [GoalsSchema],
   Economy: {
     income: [IncomeSchema],
     expenses: [ExpenseSchema],
-  }
-}, {timestamps: true })
+  },
+}, { timestamps: true })
 
 const User = mongoose.model('User', UserSchema)
 
