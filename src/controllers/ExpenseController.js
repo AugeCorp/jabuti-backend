@@ -1,28 +1,6 @@
 const ExpenseBusiness = require('../business/ExpenseBusiness')
 
 module.exports = class ExpenseController extends ExpenseBusiness {
-  async show(req, res) {
-    try {
-      const { _id } = req.params
-      const response = await super.getExpenses({ _id })
-      return res.status(200).json(response)
-    } catch (err) {
-      console.log(err)
-      return res.status(400).json(err)
-    }
-  }
-
-  async index(req, res) {
-    try {
-      const { expenseId } = req.params
-      const response = await super.getExpense({ expenseId })
-      return res.status(200).json(response)
-    } catch (err) {
-      console.log(err)
-      return res.status(400).json(err)
-    }
-  }
-
   async create(req, res) {
     try {
       const {
@@ -38,10 +16,21 @@ module.exports = class ExpenseController extends ExpenseBusiness {
     }
   }
 
-  async delete(req, res) {
+  async show(req, res) {
+    try {
+      const { _id } = req.params
+      const response = await super.show({ _id })
+      return res.status(200).json(response)
+    } catch (err) {
+      console.log(err)
+      return res.status(400).json(err)
+    }
+  }
+
+  async index(req, res) {
     try {
       const { expenseId } = req.params
-      const response = await super.delete({ expenseId })
+      const response = await super.index({ expenseId })
       return res.status(200).json(response)
     } catch (err) {
       console.log(err)
@@ -53,6 +42,17 @@ module.exports = class ExpenseController extends ExpenseBusiness {
     try {
       const { expenseObject } = req.body
       const response = await super.update({ expenseObject })
+      return res.status(200).json(response)
+    } catch (err) {
+      console.log(err)
+      return res.status(400).json(err)
+    }
+  }
+
+  async delete(req, res) {
+    try {
+      const { expenseId } = req.params
+      const response = await super.delete({ expenseId })
       return res.status(200).json(response)
     } catch (err) {
       console.log(err)

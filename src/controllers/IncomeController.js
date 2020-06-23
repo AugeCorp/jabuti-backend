@@ -19,7 +19,7 @@ module.exports = class IncomeController extends IncomeBusiness {
   async show(req, res) {
     try {
       const { _id } = req.params
-      const response = await super.getIncomes({ _id })
+      const response = await super.show({ _id })
       return res.status(200).json(response)
     } catch (err) {
       console.log(err)
@@ -30,18 +30,7 @@ module.exports = class IncomeController extends IncomeBusiness {
   async index(req, res) {
     try {
       const { incomeId } = req.params
-      const response = await super.getIncome({ incomeId })
-      return res.status(200).json(response)
-    } catch (err) {
-      console.log(err)
-      return res.status(400).json(err)
-    }
-  }
-
-  async delete(req, res) {
-    try {
-      const { incomeId } = req.params
-      const response = await super.delete({ incomeId })
+      const response = await super.index({ incomeId })
       return res.status(200).json(response)
     } catch (err) {
       console.log(err)
@@ -53,6 +42,17 @@ module.exports = class IncomeController extends IncomeBusiness {
     try {
       const { incomeObject } = req.body
       const response = await super.update({ incomeObject })
+      return res.status(200).json(response)
+    } catch (err) {
+      console.log(err)
+      return res.status(400).json(err)
+    }
+  }
+
+  async delete(req, res) {
+    try {
+      const { incomeId } = req.params
+      const response = await super.delete({ incomeId })
       return res.status(200).json(response)
     } catch (err) {
       console.log(err)

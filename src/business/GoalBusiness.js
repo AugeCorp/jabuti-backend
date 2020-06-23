@@ -47,7 +47,7 @@ class GoalBusiness {
     }
   }
 
-  async getGoals(params = {}) {
+  async show(params = {}) {
     try {
       const { _id } = params
       let err;
@@ -73,7 +73,7 @@ class GoalBusiness {
     }
   }
 
-  async getGoal(params = {}) {
+  async index(params = {}) {
     try {
       const { goalId } = params
       let err;
@@ -96,6 +96,44 @@ class GoalBusiness {
     } catch (err) {
       console.log(err)
       throw err
+    }
+  }
+
+  async update(params = {}) {
+    const session = await mongoose.startSession()
+    session.startTransaction()
+    try {
+      const { goalObject } = params
+      const { _id } = goalObject
+      let err;
+
+      if (!mongoose.mongo.ObjectId.isValid(_id)) {
+        err = { message: '"goalId" is not a valid Id!' }
+        throw err
+      }
+
+      const response = await User
+        .findOne({ Goals: { $elemMatch: { _id: mongoose.Types.ObjectId(_id) } } })
+
+      if (!response) {
+        err = { message: 'Goal not exists!' }
+        throw err
+      }
+
+      const found = response.Goals
+        .findIndex((goal) => String(goal._id) === String(_id));
+
+      response.Goals[found] = goalObject
+      await response.save()
+      await session.commitTransaction()
+
+      return { updatedGoal: response.Goals[found] }
+    } catch (err) {
+      console.log(err)
+      await session.abortTransaction()
+      throw err
+    } finally {
+      session.endSession()
     }
   }
 
@@ -132,44 +170,6 @@ class GoalBusiness {
       await session.commitTransaction()
 
       return { deleted: true }
-    } catch (err) {
-      console.log(err)
-      await session.abortTransaction()
-      throw err
-    } finally {
-      session.endSession()
-    }
-  }
-
-  async update(params = {}) {
-    const session = await mongoose.startSession()
-    session.startTransaction()
-    try {
-      const { goalObject } = params
-      const { _id } = goalObject
-      let err;
-
-      if (!mongoose.mongo.ObjectId.isValid(_id)) {
-        err = { message: '"goalId" is not a valid Id!' }
-        throw err
-      }
-
-      const response = await User
-        .findOne({ Goals: { $elemMatch: { _id: mongoose.Types.ObjectId(_id) } } })
-
-      if (!response) {
-        err = { message: 'Goal not exists!' }
-        throw err
-      }
-
-      const found = response.Goals
-        .findIndex((goal) => String(goal._id) === String(_id));
-
-      response.Goals[found] = goalObject
-      await response.save()
-      await session.commitTransaction()
-
-      return { updatedGoal: response.Goals[found] }
     } catch (err) {
       console.log(err)
       await session.abortTransaction()

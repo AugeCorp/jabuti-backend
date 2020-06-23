@@ -46,7 +46,7 @@ module.exports = class ExpenseBusiness {
     }
   }
 
-  async getExpenses(params = {}) {
+  async show(params = {}) {
     try {
       const { _id } = params
       let err;
@@ -72,7 +72,7 @@ module.exports = class ExpenseBusiness {
     }
   }
 
-  async getExpense(params = {}) {
+  async index(params = {}) {
     try {
       const { expenseId } = params
       let err;
@@ -95,6 +95,44 @@ module.exports = class ExpenseBusiness {
     } catch (err) {
       console.log(err)
       throw err
+    }
+  }
+
+  async update(params = {}) {
+    const session = await mongoose.startSession()
+    session.startTransaction()
+    try {
+      const { expenseObject } = params
+      const { _id } = expenseObject
+      let err;
+
+      if (!mongoose.mongo.ObjectId.isValid(_id)) {
+        err = { message: '"expenseId" is not a valid Id!' }
+        throw err
+      }
+
+      const response = await User
+        .findOne({ 'Economy.expenses': { $elemMatch: { _id: mongoose.Types.ObjectId(_id) } } })
+
+      if (!response) {
+        err = { message: 'Expense not exists!' }
+        throw err
+      }
+
+      const found = response.Economy.expenses
+        .findIndex((expense) => String(expense._id) === String(_id));
+
+      response.Economy.expenses[found] = expenseObject
+      await response.save()
+      await session.commitTransaction()
+
+      return { updatedExpense: response.Economy.expenses[found] }
+    } catch (err) {
+      console.log(err)
+      await session.abortTransaction()
+      throw err
+    } finally {
+      session.endSession()
     }
   }
 
@@ -131,44 +169,6 @@ module.exports = class ExpenseBusiness {
       await session.commitTransaction()
 
       return { deleted: true }
-    } catch (err) {
-      console.log(err)
-      await session.abortTransaction()
-      throw err
-    } finally {
-      session.endSession()
-    }
-  }
-
-  async update(params = {}) {
-    const session = await mongoose.startSession()
-    session.startTransaction()
-    try {
-      const { expenseObject } = params
-      const { _id } = expenseObject
-      let err;
-
-      if (!mongoose.mongo.ObjectId.isValid(_id)) {
-        err = { message: '"expenseId" is not a valid Id!' }
-        throw err
-      }
-
-      const response = await User
-        .findOne({ 'Economy.expenses': { $elemMatch: { _id: mongoose.Types.ObjectId(_id) } } })
-
-      if (!response) {
-        err = { message: 'Expense not exists!' }
-        throw err
-      }
-
-      const found = response.Economy.expenses
-        .findIndex((expense) => String(expense._id) === String(_id));
-
-      response.Economy.expenses[found] = expenseObject
-      await response.save()
-      await session.commitTransaction()
-
-      return { updatedExpense: response.Economy.expenses[found] }
     } catch (err) {
       console.log(err)
       await session.abortTransaction()
