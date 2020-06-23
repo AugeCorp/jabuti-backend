@@ -10,7 +10,7 @@ module.exports = class IncomeController extends IncomeBusiness {
       const response = await super.create({
         _id, value, description, type,
       })
-      return res.status(200).json(response)
+      return res.status(201).json(response)
     } catch (err) {
       return res.status(400).json(err)
     }

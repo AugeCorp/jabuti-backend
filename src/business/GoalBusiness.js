@@ -39,9 +39,8 @@ class GoalBusiness {
       await session.commitTransaction()
       return { newGoal: params }
     } catch (err) {
-      console.log(err)
       await session.abortTransaction()
-      return err
+      throw { error: err }
     } finally {
       session.endSession()
     }
@@ -66,10 +65,9 @@ class GoalBusiness {
         throw err
       }
 
-      return response[0]
+      return { goals: response[0] }
     } catch (err) {
-      console.log(err)
-      throw err
+      throw { error: err }
     }
   }
 
@@ -92,10 +90,9 @@ class GoalBusiness {
       }
       const goal = response.Goals[0]
 
-      return goal
+      return { goal }
     } catch (err) {
-      console.log(err)
-      throw err
+      throw { error: err }
     }
   }
 
@@ -129,9 +126,8 @@ class GoalBusiness {
 
       return { updatedGoal: response.Goals[found] }
     } catch (err) {
-      console.log(err)
       await session.abortTransaction()
-      throw err
+      throw { error: err }
     } finally {
       session.endSession()
     }
@@ -171,9 +167,8 @@ class GoalBusiness {
 
       return { deleted: true }
     } catch (err) {
-      console.log(err)
       await session.abortTransaction()
-      throw err
+      throw { error: err }
     } finally {
       session.endSession()
     }

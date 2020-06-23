@@ -40,42 +40,44 @@ class UserBusiness {
       newUser.token = token
       await newUser.save()
       await session.commitTransaction()
-      return newUser
+      return { newUser }
     } catch (err) {
-      console.log(err)
       await session.abortTransaction()
-      return err
+      throw { error: err }
     } finally {
       session.endSession()
     }
   }
 
   async show(params = {}) {
-    let err
-    const { email } = params
-    if (!email) {
-      err = { message: 'Email not passed' }
-      throw err
+    try {
+      let err
+      const { email } = params
+      if (!email) {
+        err = { message: 'Email not passed' }
+        throw err
+      }
+
+      const response = await User.findOne({ email })
+
+      if (!response) {
+        err = { message: 'email not exists' }
+        throw err
+      }
+
+      return { user: response }
+    } catch (err) {
+      throw { error: err }
     }
-
-    const response = await User.findOne({ email })
-
-    if (!response) {
-      err = { message: 'email not exists' }
-      throw err
-    }
-
-    return response
   }
 
   async index() {
     try {
       const response = await User.find()
-      return response
+      return { users: response }
     } catch (err) {
       err.message = 'Error in database'
-      console.log(err)
-      throw err
+      throw { error: err }
     }
   }
 
@@ -105,9 +107,8 @@ class UserBusiness {
 
       return { updatedUser: response }
     } catch (err) {
-      console.log(err)
       await session.abortTransaction()
-      throw err
+      throw { error: err }
     } finally {
       session.endSession()
     }
@@ -134,9 +135,8 @@ class UserBusiness {
       await session.commitTransaction()
       return { deleted: true }
     } catch (err) {
-      console.log(err)
       await session.abortTransaction()
-      return err
+      throw { error: err }
     } finally {
       session.endSession()
     }
@@ -179,8 +179,7 @@ class UserBusiness {
       user.password = undefined
       return user
     } catch (err) {
-      console.log(err)
-      throw err
+      throw { error: err }
     }
   }
 }
