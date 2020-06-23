@@ -23,6 +23,10 @@ routes.delete('/user/:_id', isAuthenticated, userController.delete)
 
 routes.post('/login', userController.login)
 
+routes.post('/forgot_password', userController.forgotPassword)
+
+routes.post('/reset_password', userController.resetPassword)
+
 // expense
 
 routes.post('/expense', isAuthenticated, expenseController.create)
