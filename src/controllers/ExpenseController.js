@@ -32,7 +32,7 @@ module.exports = class ExpenseController extends ExpenseBusiness {
       const response = await super.create({
         _id, paymentType, priority, description, price, category, validity, type,
       })
-      return res.status(200).json(response)
+      return res.status(200).json({ newExpense: response })
     } catch (err) {
       return res.status(400).json(err)
     }

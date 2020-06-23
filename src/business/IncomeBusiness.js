@@ -37,7 +37,7 @@ class IncomeBusiness {
 
       await user.save()
       await session.commitTransaction()
-      return params
+      return { newIncome: params }
     } catch (err) {
       console.log(err)
       await session.abortTransaction()
@@ -59,7 +59,7 @@ class IncomeBusiness {
 
       const response = await User
         .aggregate([{ $match: { _id: mongoose.Types.ObjectId(_id) } }])
-        .project({ expenses: '$Economy.income', _id: false })
+        .project({ incomes: '$Economy.income', _id: false })
 
       if (response.length === 0) {
         err = { message: 'User not exists!' }
@@ -131,7 +131,7 @@ class IncomeBusiness {
       await response.save()
       await session.commitTransaction()
 
-      return { success: 'income is deleted!' }
+      return { deleted: true }
     } catch (err) {
       console.log(err)
       await session.abortTransaction()
@@ -170,7 +170,7 @@ class IncomeBusiness {
       await response.save()
       await session.commitTransaction()
 
-      return { Income: response.Economy.income[found] }
+      return { updatedIncome: response.Economy.income[found] }
     } catch (err) {
       console.log(err)
       await session.abortTransaction()

@@ -1,15 +1,12 @@
 const User = require('../models/User')
 const mongoose = require('../database/index')
 
-module.exports = class ExpenseBusiness {
+class GoalBusiness {
   async create(params = {}) {
     const session = await mongoose.startSession()
     session.startTransaction()
     try {
       let err
-      const {
-        _id, paymentType, priority, description, price, category, validity, type,
-      } = params
 
       for (const [key, value] of Object.entries(params)) {
         if (value == null || value === undefined) {
@@ -17,6 +14,10 @@ module.exports = class ExpenseBusiness {
           throw err
         }
       }
+
+      const {
+        _id, price, description, category, conquestDate,
+      } = params
 
       if (!mongoose.mongo.ObjectId.isValid(_id)) {
         err = { message: 'It is not a valid Id!' }
@@ -30,13 +31,13 @@ module.exports = class ExpenseBusiness {
 
       const user = await User.findById({ _id: mongoose.Types.ObjectId(_id) })
 
-      user.Economy.expenses.push({
-        paymentType, priority, price, description, category, validity, type,
+      user.Goals.push({
+        price, description, category, conquestDate,
       })
 
       await user.save()
       await session.commitTransaction()
-      return params
+      return { newGoal: params }
     } catch (err) {
       console.log(err)
       await session.abortTransaction()
@@ -46,7 +47,7 @@ module.exports = class ExpenseBusiness {
     }
   }
 
-  async getExpenses(params = {}) {
+  async getGoals(params = {}) {
     try {
       const { _id } = params
       let err;
@@ -58,7 +59,7 @@ module.exports = class ExpenseBusiness {
 
       const response = await User
         .aggregate([{ $match: { _id: mongoose.Types.ObjectId(_id) } }])
-        .project({ expenses: '$Economy.expenses', _id: false })
+        .project({ goals: '$Goals', _id: false })
 
       if (response.length === 0) {
         err = { message: 'User not exists!' }
@@ -72,26 +73,26 @@ module.exports = class ExpenseBusiness {
     }
   }
 
-  async getExpense(params = {}) {
+  async getGoal(params = {}) {
     try {
-      const { expenseId } = params
+      const { goalId } = params
       let err;
 
-      if (!mongoose.mongo.ObjectId.isValid(expenseId)) {
-        err = { message: '"expenseId" is not a valid Id!' }
+      if (!mongoose.mongo.ObjectId.isValid(goalId)) {
+        err = { message: '"goalId" is not a valid Id!' }
         throw err
       }
 
       const response = await User
-        .findOne({ 'Economy.expenses': { $elemMatch: { _id: mongoose.Types.ObjectId(expenseId) } } }, { 'Economy.expenses.$': true })
+        .findOne({ Goals: { $elemMatch: { _id: mongoose.Types.ObjectId(goalId) } } }, { 'Goals.$': true })
 
       if (!response) {
-        err = { message: 'Expense not exists!' }
+        err = { message: 'Goals not exists!' }
         throw err
       }
-      const expense = response.Economy.expenses[0]
+      const goal = response.Goals[0]
 
-      return expense
+      return goal
     } catch (err) {
       console.log(err)
       throw err
@@ -102,30 +103,30 @@ module.exports = class ExpenseBusiness {
     const session = await mongoose.startSession()
     session.startTransaction()
     try {
-      const { expenseId } = params
+      const { goalId } = params
       let err;
 
-      if (!mongoose.mongo.ObjectId.isValid(expenseId)) {
-        err = { message: '"expenseId" is not a valid Id!' }
+      if (!mongoose.mongo.ObjectId.isValid(goalId)) {
+        err = { message: '"goalId" is not a valid Id!' }
         throw err
       }
 
       const response = await User
-        .findOne({ 'Economy.expenses': { $elemMatch: { _id: mongoose.Types.ObjectId(expenseId) } } })
+        .findOne({ Goals: { $elemMatch: { _id: mongoose.Types.ObjectId(goalId) } } })
 
       if (!response) {
-        err = { message: 'Expense not exists!' }
+        err = { message: 'Goal not exists!' }
         throw err
       }
 
-      const found = response.Economy.expenses
-        .findIndex((expense) => String(expense._id) === String(expenseId));
+      const found = response.Goals
+        .findIndex((goal) => String(goal._id) === String(goalId));
 
-      if (found === 0) await response.Economy.expenses.shift()
+      if (found === 0) await response.Goals.shift()
 
-      else if (response.Economy.expenses.length - 1 === found) await response.Economy.expenses.pop()
+      else if (response.Goals.length - 1 === found) await response.Goals.pop()
 
-      else await response.Economy.expenses.splice(found, 1)
+      else await response.Goals.splice(found, 1)
 
       await response.save()
       await session.commitTransaction()
@@ -144,31 +145,31 @@ module.exports = class ExpenseBusiness {
     const session = await mongoose.startSession()
     session.startTransaction()
     try {
-      const { expenseObject } = params
-      const { _id } = expenseObject
+      const { goalObject } = params
+      const { _id } = goalObject
       let err;
 
       if (!mongoose.mongo.ObjectId.isValid(_id)) {
-        err = { message: '"expenseId" is not a valid Id!' }
+        err = { message: '"goalId" is not a valid Id!' }
         throw err
       }
 
       const response = await User
-        .findOne({ 'Economy.expenses': { $elemMatch: { _id: mongoose.Types.ObjectId(_id) } } })
+        .findOne({ Goals: { $elemMatch: { _id: mongoose.Types.ObjectId(_id) } } })
 
       if (!response) {
-        err = { message: 'Expense not exists!' }
+        err = { message: 'Goal not exists!' }
         throw err
       }
 
-      const found = response.Economy.expenses
-        .findIndex((expense) => String(expense._id) === String(_id));
+      const found = response.Goals
+        .findIndex((goal) => String(goal._id) === String(_id));
 
-      response.Economy.expenses[found] = expenseObject
+      response.Goals[found] = goalObject
       await response.save()
       await session.commitTransaction()
 
-      return { updatedExpense: response.Economy.expenses[found] }
+      return { updatedGoal: response.Goals[found] }
     } catch (err) {
       console.log(err)
       await session.abortTransaction()
@@ -178,3 +179,5 @@ module.exports = class ExpenseBusiness {
     }
   }
 }
+
+module.exports = GoalBusiness

@@ -2,10 +2,12 @@ const routes = require('../../config/routes.config')
 const UserController = require('../../controllers/UserController')
 const ExpenseController = require('../../controllers/ExpenseController')
 const IncomeController = require('../../controllers/IncomeController')
+const GoalController = require('../../controllers/GoalController')
 
 const userController = new UserController()
 const expenseController = new ExpenseController()
 const incomeController = new IncomeController()
+const goalController = new GoalController()
 
 // user
 routes.post('/user', userController.create)
@@ -40,6 +42,17 @@ routes.delete('/income/:incomeId', incomeController.delete)
 
 routes.put('/income', incomeController.update)
 
+// goals
+
+routes.post('/goal', goalController.create)
+
+routes.get('/goals/:_id', goalController.show)
+
+routes.get('/goal/:goalId', goalController.index)
+
+routes.delete('/goal/:goalId', goalController.delete)
+
+routes.put('/goal', goalController.update)
 
 require('./auth.routes');
 

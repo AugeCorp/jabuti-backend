@@ -1,14 +1,14 @@
-const IncomeBusiness = require('../business/IncomeBusiness')
+const GoalBusiness = require('../business/GoalBusiness')
 
-module.exports = class IncomeController extends IncomeBusiness {
+module.exports = class GoalController extends GoalBusiness {
   async create(req, res) {
     try {
       const {
-        _id, value, description, type,
+        _id, price, description, category, conquestDate,
       } = req.body
 
       const response = await super.create({
-        _id, value, description, type,
+        _id, price, description, category, conquestDate,
       })
       return res.status(200).json(response)
     } catch (err) {
@@ -19,7 +19,7 @@ module.exports = class IncomeController extends IncomeBusiness {
   async show(req, res) {
     try {
       const { _id } = req.params
-      const response = await super.getIncomes({ _id })
+      const response = await super.getGoals({ _id })
       return res.status(200).json(response)
     } catch (err) {
       console.log(err)
@@ -29,8 +29,8 @@ module.exports = class IncomeController extends IncomeBusiness {
 
   async index(req, res) {
     try {
-      const { incomeId } = req.params
-      const response = await super.getIncome({ incomeId })
+      const { goalId } = req.params
+      const response = await super.getGoal({ goalId })
       return res.status(200).json(response)
     } catch (err) {
       console.log(err)
@@ -40,8 +40,8 @@ module.exports = class IncomeController extends IncomeBusiness {
 
   async delete(req, res) {
     try {
-      const { incomeId } = req.params
-      const response = await super.delete({ incomeId })
+      const { goalId } = req.params
+      const response = await super.delete({ goalId })
       return res.status(200).json(response)
     } catch (err) {
       console.log(err)
@@ -51,8 +51,8 @@ module.exports = class IncomeController extends IncomeBusiness {
 
   async update(req, res) {
     try {
-      const { incomeObject } = req.body
-      const response = await super.update({ incomeObject })
+      const { goalObject } = req.body
+      const response = await super.update({ goalObject })
       return res.status(200).json(response)
     } catch (err) {
       console.log(err)
