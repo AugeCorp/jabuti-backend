@@ -1,9 +1,7 @@
 const mongoose = require('mongoose')
 const { MongoDb } = require('../secure/secrets.json')
 
-const dbUrl = process.env.NODE_ENV === 'production' ? MongoDb.dbUrlProduction : MongoDb.dbUrl
-
-mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(MongoDb.dbUrl, { useNewUrlParser: true, useUnifiedTopology: true })
 mongoose.Promise = global.Promise
 
 console.log('Mongodb connected...');
