@@ -4,11 +4,11 @@ module.exports = class IncomeController extends IncomeBusiness {
   async create(req, res) {
     try {
       const {
-        _id, value, description, type,
+        _id, value, description, type, receiptDate,
       } = req.body
 
       const response = await super.create({
-        _id, value, description, type,
+        _id, value, description, type, receiptDate,
       })
       return res.status(201).json(response)
     } catch (err) {

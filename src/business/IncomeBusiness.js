@@ -1,6 +1,6 @@
+const Moment = require('moment')
 const User = require('../models/User')
 const mongoose = require('../database/index')
-
 
 class IncomeBusiness {
   async create(params = {}) {
@@ -16,7 +16,7 @@ class IncomeBusiness {
         }
       }
       const {
-        _id, value, description, type,
+        _id, value, description, type, receiptDate,
       } = params
 
       if (!mongoose.mongo.ObjectId.isValid(_id)) {
@@ -32,7 +32,7 @@ class IncomeBusiness {
       const user = await User.findById({ _id: mongoose.Types.ObjectId(_id) })
 
       user.Economy.income.push({
-        value, description, type,
+        value, description, type, receiptDate: Moment(receiptDate).utc(-3).toISOString(),
       })
 
       await user.save()
