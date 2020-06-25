@@ -1,14 +1,15 @@
 const User = require('../models/User')
-const IncomeBusiness = require('./IncomeBusiness');
-const mongoose = require('../database');
+const IncomeBusiness = require('./IncomeBusiness')
+const mongoose = require('../database')
 
 module.exports = class FirstContact extends IncomeBusiness {
   async create(params = {}) {
+    const session = await mongoose.startSession()
+    session.startTransaction()
     try {
-      const { _id, name } = params
-
-      const session = await mongoose.startSession()
-      session.startTransaction()
+      const {
+        _id, name, value, description, type,
+      } = params
 
       const user = await User.findOne({ _id })
 
@@ -17,11 +18,16 @@ module.exports = class FirstContact extends IncomeBusiness {
       await user.save()
       await session.commitTransaction()
 
-      const response = await super.create({ id: _id, ...params })
+      const response = await super.create({
+        _id, name, value, description, type,
+      })
 
       return response
     } catch (err) {
-      return err.message
+      await session.abortTransaction()
+      throw { error: err }
+    } finally {
+      session.endSession()
     }
   }
 }

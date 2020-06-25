@@ -3,8 +3,16 @@ const FirstContact = require('../business/FirstContact')
 module.exports = class FirstContactController extends FirstContact {
   async create(req, res) {
     try {
-
-      const response = await super.create({ _id: req.userId, ...req.body })
+      const {
+        name, value, description, type,
+      } = req.body
+      const response = await super.create({
+        _id: req.userId,
+        name,
+        value,
+        description,
+        type,
+      })
 
       return res.status(201).json(response)
     } catch (err) {

@@ -62,7 +62,7 @@ routes.delete('/goal/:goalId', isAuthenticated, goalController.delete)
 
 // First Access
 
-routes.post('/firstContact', isAuthenticated, firstContact.create)
+routes.post('/first-contact', isAuthenticated, firstContact.create)
 
 require('./auth.routes');
 
