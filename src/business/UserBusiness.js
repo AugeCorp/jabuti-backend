@@ -1,9 +1,9 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const crypto = require('crypto')
 const User = require('../models/User')
 const mongoose = require('../database/index')
 const authConfig = require('../secure/secrets.json')
-
 
 class UserBusiness {
   async create(params = {}) {
@@ -180,6 +180,100 @@ class UserBusiness {
       return user
     } catch (err) {
       throw { error: err }
+    }
+  }
+
+  async forgotPassword(params = {}) {
+    try {
+      let err
+
+      const { email } = params
+
+      if (!email) {
+        err = { message: 'Email not passed' }
+        throw err
+      }
+
+      const user = await User.findOne({ email })
+
+      if (!user) {
+        err = { message: 'User not found' }
+        throw err
+      }
+
+      const token = crypto.randomBytes(20).toString('hex')
+
+      const now = new Date()
+      now.setHours(now.getHours() + 1)
+
+      await User.findByIdAndUpdate(user._id, {
+        $set: {
+          passwordResetToken: token,
+          passwordResetExpires: now,
+        },
+      })
+
+      // TODO
+      // ENVIO DE EMAIL
+      return { user }
+    } catch (err) {
+      throw { error: err }
+    }
+  }
+
+  async resetPassword(params = {}) {
+    const session = await mongoose.startSession()
+    session.startTransaction()
+    try {
+      let err
+
+      const { email, password, token } = params
+
+      if (!email) {
+        err = { message: 'Email not passed' }
+        throw err
+      }
+
+      if (!password) {
+        err = { message: 'Password not passed' }
+        throw err
+      }
+
+      if (!token) {
+        err = { message: 'token not passed' }
+        throw err
+      }
+
+
+      const user = await User.findOne({ email }).select('+passwordResetToken passwordResetExpires')
+
+
+      if (!user) {
+        err = { message: 'User not found' }
+        throw err
+      }
+
+      if (token !== user.passwordResetToken) {
+        err = { message: 'Token is invalid' }
+        throw err
+      }
+
+      const now = new Date()
+
+      if (now > user.passwordResetExpires) {
+        err = { message: 'token expired, generate a new one' }
+        throw err
+      }
+
+      user.password = password
+      await user.save()
+      await session.commitTransaction()
+      return { reset: true }
+    } catch (err) {
+      await session.abortTransaction()
+      throw { error: err }
+    } finally {
+      session.endSession()
     }
   }
 }

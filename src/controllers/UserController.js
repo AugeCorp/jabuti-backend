@@ -66,4 +66,26 @@ module.exports = class UserController extends UserBusiness {
       return res.status(400).send(err)
     }
   }
+
+  async forgotPassword(req, res) {
+    try {
+      const { email } = req.body
+      const response = await super.forgotPassword({ email })
+      return res.status(200).send(response)
+    } catch (err) {
+      console.log(err)
+      return res.status(400).send(err)
+    }
+  }
+
+  async resetPassword(req, res) {
+    try {
+      const { email, token, password } = req.body
+      const response = await super.resetPassword({ email, token, password })
+      return res.status(200).send(response)
+    } catch (err) {
+      console.log(err)
+      return res.status(400).send(err)
+    }
+  }
 }
