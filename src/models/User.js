@@ -11,6 +11,8 @@ const UserSchema = new Schema({
   password: { type: String, required: true },
   token: { type: String, default: '' },
   name: { type: String, default: '' },
+  passwordResetToken: { type: String, select: false },
+  passwordResetExpires: { type: Date, default: Date.now },
 
   googleAccount: { type: Boolean, default: false },
   isActive: { type: Boolean, default: false },
