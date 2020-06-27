@@ -3,12 +3,14 @@ const UserController = require('../../controllers/UserController')
 const ExpenseController = require('../../controllers/ExpenseController')
 const IncomeController = require('../../controllers/IncomeController')
 const GoalController = require('../../controllers/GoalController')
+const FirstContact = require('../../controllers/FirstContact')
 const isAuthenticated = require('../../middlewares/auth')
 
 const userController = new UserController()
 const expenseController = new ExpenseController()
 const incomeController = new IncomeController()
 const goalController = new GoalController()
+const firstContact = new FirstContact()
 
 // user
 routes.post('/user', userController.create)
@@ -61,6 +63,10 @@ routes.get('/goal/:goalId', isAuthenticated, goalController.index)
 routes.put('/goal', isAuthenticated, goalController.update)
 
 routes.delete('/goal/:goalId', isAuthenticated, goalController.delete)
+
+// First Access
+
+routes.post('/first-contact', isAuthenticated, firstContact.create)
 
 require('./auth.routes');
 
