@@ -16,7 +16,7 @@ module.exports = class FirstContactController extends FirstContact {
 
       return res.status(201).json(response)
     } catch (err) {
-      return res.status(400).json(err.message)
+      return res.status(400).json(err)
     }
   }
 }

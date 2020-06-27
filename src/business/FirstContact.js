@@ -10,6 +10,27 @@ module.exports = class FirstContact extends IncomeBusiness {
       const {
         _id, name, value, description, type,
       } = params
+      let err;
+
+      if (!mongoose.mongo.ObjectId.isValid(_id)) {
+        err = { message: 'It is not a valid Id!' }
+        throw err
+      }
+
+      if (!name) {
+        err = { message: 'name not passed!' }
+        throw err
+      }
+
+      if (!value) {
+        err = { message: 'value not passed!' }
+        throw err
+      }
+
+      if (!description) {
+        err = { message: 'description not passed!' }
+        throw err
+      }
 
       const user = await User.findOne({ _id })
 
