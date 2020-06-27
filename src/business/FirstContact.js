@@ -43,6 +43,8 @@ module.exports = class FirstContact extends IncomeBusiness {
         _id, name, value, description, type,
       })
 
+      response.user = user;
+
       return response
     } catch (err) {
       await session.abortTransaction()
