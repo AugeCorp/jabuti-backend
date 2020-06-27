@@ -4,11 +4,10 @@ module.exports = class ExpenseController extends ExpenseBusiness {
   async create(req, res) {
     try {
       const {
-        _id, paymentType, priority, description, price, category, validity, type,
+        _id, paymentType, priority, description, price, category, validity, type, payDate,
       } = req.body
-
       const response = await super.create({
-        _id, paymentType, priority, description, price, category, validity, type,
+        _id, paymentType, priority, description, price, category, validity, type, payDate,
       })
       return res.status(201).json({ newExpense: response })
     } catch (err) {
