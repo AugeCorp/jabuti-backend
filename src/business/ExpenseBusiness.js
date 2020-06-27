@@ -1,3 +1,4 @@
+const Moment = require('moment')
 const User = require('../models/User')
 const mongoose = require('../database/index')
 
@@ -8,7 +9,7 @@ module.exports = class ExpenseBusiness {
     try {
       let err
       const {
-        _id, paymentType, priority, description, price, category, validity, type,
+        _id, paymentType, priority, description, price, category, validity, type, payDate,
       } = params
 
       for (const [key, value] of Object.entries(params)) {
@@ -31,7 +32,14 @@ module.exports = class ExpenseBusiness {
       const user = await User.findById({ _id: mongoose.Types.ObjectId(_id) })
 
       user.Economy.expenses.push({
-        paymentType, priority, price, description, category, validity, type,
+        paymentType,
+        priority,
+        price,
+        description,
+        category,
+        validity,
+        type,
+        payDate: Moment(payDate).utc(-3).toISOString(),
       })
 
       await user.save()

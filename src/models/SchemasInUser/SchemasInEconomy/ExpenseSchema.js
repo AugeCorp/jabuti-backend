@@ -10,6 +10,7 @@ const ExpenseSchema = mongoose.Schema({
   price: { type: Number, default: 0 },
 
   validity: { type: Date, default: Date.now() },
+  payDate: { type: Date, default: Date.now() },
 
   paymentType: {
     cash: { type: Boolean, default: false },

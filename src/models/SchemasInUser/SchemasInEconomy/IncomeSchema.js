@@ -7,6 +7,7 @@ const IncomeSchema = mongoose.Schema({
 
   value: { type: Number, default: 0 },
 
+  receiptDate: { type: Date, default: Date.now() },
 }, { id: false, timestamps: true })
 
 module.exports = IncomeSchema
